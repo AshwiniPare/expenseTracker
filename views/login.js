@@ -16,12 +16,9 @@ async function login(event)
             //console.log('response  is '+response.data);
             if(response.status === 200) {
                 alert(response.data.message);
-            } else {
-                console.log('here');
-                throw new Error(response.data.message);
-            }
+            } 
     } catch(err) {
-            document.body.innerHTML += `<div style="color:red;">${err.message}</div>`
+            document.body.innerHTML += `<div style="color:red;">${err.response.data.message}</div>`
             console.error(JSON.stringify(err));
         } 
        

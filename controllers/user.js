@@ -16,14 +16,12 @@ exports.postUser = async (req, res, next) => {
         const password = req.body.password;
 
         if(stringInvalid(name) || stringInvalid(email) || stringInvalid(password))
-            return res.status(400).json({err: "Bad parameters. Some details are missing"});
+            return res.status(400).json({message: "Bad parameters. Some details are missing"});
 
         const data = await User.create( {name: name, email: email, password: password});
         res.status(201).json({messsage: 'Successfully created new user'});
     } catch(err) {
-        res.status(500).json({
-            error: err
-        })
+        return res.status(500).json({message: err})
     }
 };
 
