@@ -16,11 +16,13 @@ app.use(cors());
 //app.set('views', 'views');
 
 const expenseRoutes = require('./routes/expense');
+const userRoutes = require('./routes/user');
 
 app.use(bodyParser.json({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/expense', expenseRoutes);
+app.use('/user', userRoutes);
 
 app.use(errorController.get404);
 
