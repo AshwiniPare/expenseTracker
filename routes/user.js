@@ -6,9 +6,9 @@ const userController = require('../controllers/user');
 
 const router = express.Router();
 
-//router.get('/get-expenses', expenseController.getExpenses);
-
 router.post('/add-user', userController.postUser);
+
+router.post('/login', userController.postLogin);
 
 //router.delete('/delete-expense/:id', expenseController.deleteExpense);
 
