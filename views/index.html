@@ -18,7 +18,7 @@
   </header>
   <div class="container">
    <div id="main" class="card card-body">
-    <form id="addForm" onsubmit="saveToLocalStorage(event)" class="form-inline mb-3">
+    <form id="addForm" onsubmit="addNewExpense(event)" class="form-inline mb-3">
       <label for="expenseAmount" class="form-label">Expense Amount</label><br>
         <input type="text" class="form-control" id="expenseAmount" name="expenseAmount" required><br>
         
@@ -27,20 +27,20 @@
 
         <label for="category" class="form-label">Choose a category</label>
         <select name="category" id="category" class="form-control">
+          <option value="fuel">Fuel</option>
+          <option value="food">Food</option>
+          <option value="electricity">Electricity</option>
           <option value="movie">Movie</option>
-          <option value="hotel">Hotel</option>
-          <option value="diesel">Diesel</option>
-          <option value="repair">Repair</option>
         </select>
         <br><br>
       <input type="submit" class="btn btn-dark" value="Add Expense">
     </form>
     
-    <ul id="items" class="list-group">
+    <ul id="listOfExpenses" class="list-group">
    </ul>
    </div>
   </div>
   <script defer src ="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js"></script>
-  <script src="ExpenseTracker.js"></script>
+  <script src="index.js"></script>
 </body>
 </html>

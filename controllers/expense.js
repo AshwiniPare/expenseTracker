@@ -1,5 +1,12 @@
 const Expense = require('../models/expense');
 
+function stringInvalid(string) {
+    if( string == undefined || string.length === 0 )
+     return true;
+     
+    return false;
+}
+
 exports.getExpenses = async(req, res, next) => {
     try {
         const expenses = await Expense.findAll();
@@ -13,20 +20,18 @@ exports.getExpenses = async(req, res, next) => {
 
 exports.postExpense = async (req, res, next) => {
     try {
-        console.log('inside post');
-        if(!req.body.amount) {
-            throw new Error('amount is mandatory');
-        }
         const amount = req.body.amount;
         const desc = req.body.desc;
         const category = req.body.category;
 
+        if(amount === undefined || stringInvalid(desc) || stringInvalid(category)) {
+            return res.status(400).json({success: false, message:'Input missing'});
+        }
+
         const data = await Expense.create( {amount: amount, desc: desc, category: category});
-        res.status(201).json({newExpenseDetail: data});
+        res.status(201).json({newExpenseDetail: data, success: true});
     } catch(err) {
-        res.status(500).json({
-            error: err
-        })
+        res.status(500).json({error: err, success: false})
     }
 };
 
