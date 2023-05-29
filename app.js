@@ -6,7 +6,8 @@ const bodyParser = require('body-parser');
 const errorController = require('./controllers/error');
 const sequelize = require('./util/database');
 
-const User = require('./models/expense');
+const Expense = require('./models/expense');
+const User = require('./models/user');
 const cors = require('cors');
 
 const app = express();
@@ -23,6 +24,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/expense', expenseRoutes);
 app.use('/user', userRoutes);
+
+User.hasMany(Expense);
+Expense.belongsTo(User);
 
 app.use(errorController.get404);
 
