@@ -32,7 +32,7 @@ exports.postUser = async (req, res, next) => {
 };
 
 function generateAccessToken(id, name) {
-    return jwt.sign({userId: id, name: name}, 'secretKey')
+    return jwt.sign({userId: id, name: name}, process.env.SECRETKEY)
 }
 
 exports.postLogin = async (req, res, next) => {

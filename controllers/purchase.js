@@ -3,10 +3,10 @@ const Order = require('../models/orders');
 
 exports.purchasePremium = async(req, res) => {
     try{
-        console.log('inside purchasepremium')
+        console.log('RAZORPAY_KEY_ID is  '+process.env.RAZORPAY_KEY_ID);
         var rzp = new Razorpay({
-            key_id: 'rzp_test_vb8oZAftZjDcJI',
-            key_secret: 'WjZVwv40yv24781D9Hu6VPFy'
+            key_id: process.env.RAZORPAY_KEY_ID,
+            key_secret: process.env.RAZORPAY_KEY_SECRET
         })
         const amount = 2500;
 
