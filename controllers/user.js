@@ -9,7 +9,7 @@ function stringInvalid(string) {
     return false;
 }
 
-exports.postUser = async (req, res, next) => {
+const postUser = async (req, res, next) => {
     try {
         console.log('inside post');
   
@@ -31,11 +31,11 @@ exports.postUser = async (req, res, next) => {
     }
 };
 
-function generateAccessToken(id, name) {
-    return jwt.sign({userId: id, name: name}, process.env.SECRETKEY)
+function generateAccessToken (id, name, isPremiumUser) {
+    return jwt.sign({userId: id, name: name, isPremiumUser: isPremiumUser}, process.env.SECRETKEY)
 }
 
-exports.postLogin = async (req, res, next) => {
+async function postLogin (req, res, next) {
     try {
         console.log('inside post');
  
@@ -51,7 +51,7 @@ exports.postLogin = async (req, res, next) => {
                 if(err)
                     throw new Error ('Something went wrong')
                 if(result === true)
-                    return res.status(200).json({success: true, message: "User logged in successfully", token:generateAccessToken(user[0].id, user[0].name)})
+                    return res.status(200).json({success: true, message: "User logged in successfully", token:generateAccessToken(user[0].id, user[0].name, user[0].isPremiumUser)})
                 else    
                     return res.status(400).json({success: false, message: "Password is incorrect"})
             })
@@ -63,3 +63,5 @@ exports.postLogin = async (req, res, next) => {
         return res.status(500).json({success: false, message: err})
     }
 };
+
+module.exports = { generateAccessToken, postLogin, postUser };
