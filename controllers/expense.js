@@ -33,6 +33,9 @@ exports.postExpense = async (req, res, next) => {
          //req.user.createExpenses=( {amount: amount, desc: desc, category: category});
 
        const data = await Expense.create( {amount: amount, desc: desc, category: category, userId: userId});
+       const totalExpenses = Number(req.user.totalExpenses) + Number(amount)
+       console.log("totalExpenses is...."+totalExpenses);
+       await User.update({ totalExpenses: totalExpenses}, { where: {id: req.user.id} })
         res.status(201).json({newExpenseDetail: data, success: true});
     } catch(err) {
         res.status(500).json({error: err, success: false})
