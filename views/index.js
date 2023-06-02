@@ -53,10 +53,12 @@ function showLeaderBoard() {
         var leaderBoardElem = document.getElementById('leaderBoard');
         leaderBoardElem.innerHTML += '<h1> Leader Board </h1>'
         for(userDetail of userLeaderBoardArray.data) {
+            if(!userDetail.total_cost)
+                userDetail.total_cost = 0;
             leaderBoardElem.innerHTML += `<li> Name - ${userDetail.name} - Total Expense is ${userDetail.total_cost} </li>`
         }  
     }
-
+    
     document.getElementById('message').appendChild(inputElement);
 }
 
