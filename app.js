@@ -10,6 +10,7 @@ const sequelize = require('./util/database');
 const Expense = require('./models/expense');
 const User = require('./models/user');
 const Order = require('./models/orders')
+const ForgotPassword = require('./models/forgotPassword');
 const cors = require('cors');
 
 const app = express();
@@ -37,6 +38,9 @@ Expense.belongsTo(User);
 
 User.hasMany(Order);
 Order.belongsTo(User);
+
+User.hasMany(ForgotPassword);
+ForgotPassword.belongsTo(User);
 
 app.use(errorController.get404);
 
