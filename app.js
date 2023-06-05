@@ -20,6 +20,8 @@ const expenseRoutes = require('./routes/expense');
 const userRoutes = require('./routes/user');
 const purchaseRoutes = require('./routes/purchase');
 const premiumRoutes = require('./routes/premium');
+const resetPasswordRoutes = require('./routes/resetPassword');
+const { reset } = require('nodemon');
 
 app.use(bodyParser.json({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
@@ -28,6 +30,7 @@ app.use('/expense', expenseRoutes);
 app.use('/user', userRoutes);
 app.use('/purchase', purchaseRoutes);
 app.use('/premium', premiumRoutes);
+app.use('/password', resetPasswordRoutes);
 
 User.hasMany(Expense);
 Expense.belongsTo(User);

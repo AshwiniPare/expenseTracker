@@ -22,3 +22,7 @@ async function login(event)
         } 
        
 }
+
+function forgotPassword() {
+    window.location.href = "forgotPassword.html"
+}
