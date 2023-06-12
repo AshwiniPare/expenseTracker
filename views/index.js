@@ -2,7 +2,6 @@ const token = localStorage.getItem('token');
 var expenseList = document.getElementById('listOfExpenses');
 const pagination = document.getElementById('pagination');
 const recPerPageElement = document.getElementById('recPerPage')
-let recPerPage = document.getElementById('recPerPage').value;
 
 async function addNewExpense(event)
 {
@@ -112,7 +111,8 @@ function showPagination({
 async function getExpenses(page) {
     try {
         document.getElementById('listOfExpenses').innerHTML = "";
-        const response = await axios.get(`http://localhost:3000/expense/get-expenses?page=${page}&&limit=${recPerPage}`, { headers: {"Authorization": token}})
+        const limit = localStorage.getItem('recPerPage') || 2;
+        const response = await axios.get(`http://localhost:3000/expense/get-expenses?page=${page}&&limit=${limit}`, { headers: {"Authorization": token}})
         for(let i=0; i<response.data.allExpenses.length; i++)
             showExpenseOnScreen(response.data.allExpenses[i]);
         showPagination(response.data);
@@ -122,7 +122,8 @@ async function getExpenses(page) {
 }
 
 recPerPageElement.addEventListener("change", (event) => {
-   recPerPage = event.target.value;
+   let recPerPage = event.target.value;
+   localStorage.setItem('recPerPage', recPerPage);
 });
 
 function showExpenseOnScreen(obj) {
