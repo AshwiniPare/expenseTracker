@@ -15,8 +15,7 @@ function stringInvalid(string) {
 exports.getExpenses = async(req, res, next) => {
     try {
         const page = +req.query.page || 1;
-       
-        const ITEMS_PER_PAGE = 2
+        const ITEMS_PER_PAGE = +req.query.limit || 2;
 
         let totalItems = await Expense.count({where: {userId: req.user.id}});
         const expenses = await Expense.findAll({ 
@@ -40,18 +39,6 @@ exports.getExpenses = async(req, res, next) => {
         res.status(500).json({ error: error});
     }
 }
-
-/*exports.getExpenses = async(req, res, next) => {
-    try {
-        const expenses = await Expense.findAll({ where: {userId: req.user.id}});
-       //const expenses = await req.user.getExpenses();
-        res.status(200).json({allExpenses: expenses});;
-
-    } catch(error) {
-        console.log('Get Expenses is failing '+ JSON.stringify(error));
-        res.status(500).json({ error: error});
-    }
-};*/
 
 exports.postExpense = async (req, res, next) => {
     const t = await sequelize.transaction();

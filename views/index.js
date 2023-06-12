@@ -1,6 +1,8 @@
 const token = localStorage.getItem('token');
 var expenseList = document.getElementById('listOfExpenses');
 const pagination = document.getElementById('pagination');
+const recPerPageElement = document.getElementById('recPerPage')
+let recPerPage = document.getElementById('recPerPage').value;
 
 async function addNewExpense(event)
 {
@@ -62,6 +64,7 @@ function showLeaderBoard() {
 
 window.addEventListener("DOMContentLoaded", async () => {
     try {
+        //document.getElementById('recPerPage').addEventListener("change", apply_pagination);
         const page = 1;
         const decodedToken = parseJwt(token);
         console.log(decodedToken);
@@ -70,15 +73,6 @@ window.addEventListener("DOMContentLoaded", async () => {
             showPremiumUserMessage();
         }
         getExpenses(page);
-       /* const response = await axios.get(`http://localhost:3000/expense/get-expenses?page=${page}`, { headers: {"Authorization": token}})
-        //listExpenses(response.data.expenses);
-        for(let i=0; i<response.data.allExpenses.length; i++)
-            showExpenseOnScreen(response.data.allExpenses[i]);
-        showPagination(response.data);*/
-
-      /*  const response = await axios.get("http://localhost:3000/expense/get-expenses", { headers: {"Authorization": token}})
-        for(let i=0; i<response.data.allExpenses.length; i++)
-        showExpenseOnScreen(response.data.allExpenses[i]);*/
     } catch(error) {
         console.error(error);
     }
@@ -117,7 +111,8 @@ function showPagination({
 
 async function getExpenses(page) {
     try {
-        const response = await axios.get(`http://localhost:3000/expense/get-expenses?page=${page}`, { headers: {"Authorization": token}})
+        document.getElementById('listOfExpenses').innerHTML = "";
+        const response = await axios.get(`http://localhost:3000/expense/get-expenses?page=${page}&&limit=${recPerPage}`, { headers: {"Authorization": token}})
         for(let i=0; i<response.data.allExpenses.length; i++)
             showExpenseOnScreen(response.data.allExpenses[i]);
         showPagination(response.data);
@@ -125,6 +120,10 @@ async function getExpenses(page) {
         console.log(error);
     }
 }
+
+recPerPageElement.addEventListener("change", (event) => {
+   recPerPage = event.target.value;
+});
 
 function showExpenseOnScreen(obj) {
     const parentElem = document.getElementById('listOfExpenses');
