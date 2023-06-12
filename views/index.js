@@ -1,5 +1,6 @@
 const token = localStorage.getItem('token');
 var expenseList = document.getElementById('listOfExpenses');
+const pagination = document.getElementById('pagination');
 
 async function addNewExpense(event)
 {
@@ -37,7 +38,7 @@ function parseJwt (token) {
 function showPremiumUserMessage() {
     document.getElementById('rzp-button').style.visibility = "hidden";
     document.getElementById('downloadexpense').style.visibility = "visible";
-    document.getElementById('message').innerHTML = "You are a Premium User now";
+    document.getElementById('message').innerHTML += "You are a Premium User now";
     showLeaderBoard();
 }
 
@@ -61,19 +62,69 @@ function showLeaderBoard() {
 
 window.addEventListener("DOMContentLoaded", async () => {
     try {
+        const page = 1;
         const decodedToken = parseJwt(token);
         console.log(decodedToken);
         const isPremiumUser = decodedToken.isPremiumUser;
         if(isPremiumUser) {
             showPremiumUserMessage();
         }
-        const response = await axios.get("http://localhost:3000/expense/get-expenses", { headers: {"Authorization": token}})
+        getExpenses(page);
+       /* const response = await axios.get(`http://localhost:3000/expense/get-expenses?page=${page}`, { headers: {"Authorization": token}})
+        //listExpenses(response.data.expenses);
         for(let i=0; i<response.data.allExpenses.length; i++)
-        showExpenseOnScreen(response.data.allExpenses[i]);
+            showExpenseOnScreen(response.data.allExpenses[i]);
+        showPagination(response.data);*/
+
+      /*  const response = await axios.get("http://localhost:3000/expense/get-expenses", { headers: {"Authorization": token}})
+        for(let i=0; i<response.data.allExpenses.length; i++)
+        showExpenseOnScreen(response.data.allExpenses[i]);*/
     } catch(error) {
         console.error(error);
     }
 })
+
+function showPagination({
+    currentPage,
+    hasNextPage,
+    nextPage,
+    hasPreviousPage,
+    previousPage,
+    lastPage
+}) {
+    
+    pagination.innerHTML = '';
+    if(hasPreviousPage) {
+        const btn2 = document.createElement('button');
+        btn2.innerHTML = previousPage;
+        btn2.addEventListener('click', () => getExpenses(previousPage));
+        pagination.appendChild(btn2);
+    }
+
+    const btn1 = document.createElement('button');
+    btn1.innerHTML = `<h3>${currentPage}</h3>`
+    btn1.addEventListener('click', () => getExpenses(currentPage))
+    pagination.appendChild(btn1);
+
+    if(hasNextPage) {
+        const btn3 = document.createElement('button');
+        btn3.innerHTML = nextPage;
+        btn3.addEventListener('click', () => getExpenses(nextPage))
+        pagination.appendChild(btn3);
+    }
+
+}
+
+async function getExpenses(page) {
+    try {
+        const response = await axios.get(`http://localhost:3000/expense/get-expenses?page=${page}`, { headers: {"Authorization": token}})
+        for(let i=0; i<response.data.allExpenses.length; i++)
+            showExpenseOnScreen(response.data.allExpenses[i]);
+        showPagination(response.data);
+    } catch(error) {
+        console.log(error);
+    }
+}
 
 function showExpenseOnScreen(obj) {
     const parentElem = document.getElementById('listOfExpenses');
@@ -151,12 +202,12 @@ document.getElementById('rzp-button').onclick = async(event) => {
 
 async function download() {
     try {
-        const response = await axios.get('http://localhost:3000/user/download', {headers: {"Authorization": token}})
+        const response = await axios.get('http://localhost:3000/expense/download', {headers: {"Authorization": token}})
         var a =document.createElement("a");
         a.href = response.data.fileUrl;
         a.download = 'myexpense.csv';
         a.click();
     } catch(err) {
-        throw new Error(response.data.message)
+        console.log(err);
     }
 }
