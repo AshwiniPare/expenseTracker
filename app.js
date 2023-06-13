@@ -1,6 +1,7 @@
 require('dotenv').config();
 const path = require('path');
 const fs = require('fs');
+const https = require('https');
 
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -19,6 +20,9 @@ const morgan = require('morgan');
 const app = express();
 
 app.use(cors());
+
+//const privateKey = fs.readFileSync('server.key');
+//const certificate = fs.readFileSync('server.cert');
 
 const expenseRoutes = require('./routes/expense');
 const userRoutes = require('./routes/user');
@@ -56,6 +60,7 @@ app.use(errorController.get404);
 
 sequelize.sync().then(result => {
     console.log(result);
+   // https.createServer({key: privateKey, cert: certificate }, app).listen(process.env.PORT || 3000);
     app.listen(process.env.PORT || 3000);
 })
 .catch(err => {
