@@ -36,15 +36,17 @@
       <input type="submit" class="btn btn-dark" value="Add Expense">
     </form>
     <label for="recPerPage" class="form-label">Choose Rows Per Page</label>
-    <select id="recPerPage">    
+    <select id="recPerPage" onchange="apply_pagination();">    
       <option value="2" selected='selected'>2</option>    
       <option value="4">4</option>    
       <option value="5">5</option>    
       </select>
     <div id="message">
-    <input type="button" id="rzp-button" class="btn btn-default btn-sm" value="Buy Premium">
-    <button onclick="download()" style="visibility: hidden" class="btn btn-default btn-sm" id="downloadexpense">Download File</button><br><br>
+    <input type="button" id="rzp-button" class="btn btn-default btn-sm" value="Buy Premium"><br>
     <script defer src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    </div>
+    <div>
+      <button onclick="download()" style="visibility: hidden" id="downloadexpense">Download File</button><br><br>
     </div>
     <ul id="listOfExpenses" class="list-group">
    </ul>

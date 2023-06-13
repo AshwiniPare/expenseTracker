@@ -1,0 +1,15 @@
+{
+    "env": {
+        "SECRETKEY": "ABCD1234EFGH",
+        "RAZORPAY_KEY_ID": "rzp_test_vb8oZAftZjDcJI",
+        "RAZORPAY_KEY_SECRET": "WjZVwv40yv24781D9Hu6VPFy",
+        "API_KEY": "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",
+        "SENGRID_API_KEY": "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",
+        "AWS_SECRET_KEY": "AKIAVWUJ6UHJ2CDLMLBG",
+        "AWS_SECRET_PASSWORD": "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",
+        "AWS_BUCKET_NAME": "expensetrackingashwini",
+        "DB_USER_NAME": "root",
+        "DB_USER_PASSWORD": "root"
+
+    }
+}
