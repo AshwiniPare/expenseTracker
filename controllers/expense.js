@@ -2,7 +2,7 @@ const Expense = require('../models/expense');
 const User = require('../models/user');
 const sequelize = require('../util/database');
 const AWS = require('aws-sdk');
-const s3Services=require('../services/s3services');
+const s3Services=require('../services/s3Services');
 const converter= require('json-2-csv');
 
 function stringInvalid(string) {
