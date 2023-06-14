@@ -12,10 +12,10 @@ async function login(event)
         }
         console.log("inside login");
         
-            const response = await axios.post('http://localhost:3000/user/login', loginDetails);
+            const response = await axios.post('http://13.48.203.158:3000/user/login', loginDetails);
             alert(response.data.message);
             localStorage.setItem('token', response.data.token)
-            window.location.href = "../views/index.html";
+            window.location.href = "../index.html";
     } catch(err) {
             document.body.innerHTML += `<div style="color:red;">${err.response.data.message}</div>`
             console.error(JSON.stringify(err));

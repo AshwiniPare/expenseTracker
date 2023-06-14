@@ -14,8 +14,8 @@ const User = require('./models/user');
 const Order = require('./models/orders')
 const ForgotPassword = require('./models/forgotPassword');
 const cors = require('cors');
-const helmet = require('helmet');
-const morgan = require('morgan');
+//const helmet = require('helmet');
+//const morgan = require('morgan');
 
 const app = express();
 
@@ -36,8 +36,8 @@ const accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'),
   flags: 'a'
 });
 
-app.use(helmet());
-app.use(morgan('combined', { stream: accessLogStream }));
+//app.use(helmet());
+//app.use(morgan('combined', { stream: accessLogStream }));
 app.use(bodyParser.json({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -46,6 +46,11 @@ app.use('/user', userRoutes);
 app.use('/purchase', purchaseRoutes);
 app.use('/premium', premiumRoutes);
 app.use('/password', resetPasswordRoutes);
+
+app.use((req, res) => {
+  console.log('url is....', req.originalUrl);
+  res.sendFile(path.join(__dirname, `public/${req.url}`))
+});
 
 User.hasMany(Expense);
 Expense.belongsTo(User);
