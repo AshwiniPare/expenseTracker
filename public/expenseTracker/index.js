@@ -52,7 +52,7 @@ function showLeaderBoard() {
         console.log(userLeaderBoardArray);
 
         var leaderBoardElem = document.getElementById('leaderBoard');
-        leaderBoardElem.innerHTML += '<h1> Leader Board </h1>'
+        leaderBoardElem.innerHTML += '<h4> Leader Board </h4>'
         for(userDetail of userLeaderBoardArray.data) {
             leaderBoardElem.innerHTML += `<li> Name - ${userDetail.name} - Total Expenses - ${userDetail.totalExpenses} </li>`
         }  
@@ -67,7 +67,7 @@ window.addEventListener("DOMContentLoaded", async () => {
         const page = 1;
         const decodedToken = parseJwt(token);
         console.log(decodedToken);
-        const isPremiumUser = decodedToken.isPremiumUser;
+        const isPremiumUser = decodedToken.isPremiumUser
         if(isPremiumUser) {
             showPremiumUserMessage();
         }
