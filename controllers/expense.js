@@ -1,3 +1,5 @@
+const mongoose= require('mongoose')
+
 const Expense = require('../models/expense');
 const User = require('../models/user');
 const sequelize = require('../util/database');
@@ -17,13 +19,11 @@ exports.getExpenses = async(req, res, next) => {
         const page = +req.query.page || 1;
         const ITEMS_PER_PAGE = +req.query.limit || 2;
 
-        let totalItems = await Expense.count({where: {userId: req.user.id}});
-        const expenses = await Expense.findAll({ 
-            where: {userId: req.user.id}, 
-            offset: (page - 1) * ITEMS_PER_PAGE,
-            limit: ITEMS_PER_PAGE
-        });
-       //const expenses = await req.user.getExpenses();
+        let totalItems = await Expense.count({userId: req.user.id});
+        const expenses = await Expense.find(
+            {userId: req.user.id}
+        ).skip((page - 1) * ITEMS_PER_PAGE).limit(ITEMS_PER_PAGE);
+       
         res.status(200).json({
             allExpenses: expenses,
             currentPage: page,
@@ -41,8 +41,10 @@ exports.getExpenses = async(req, res, next) => {
 }
 
 exports.postExpense = async (req, res, next) => {
-    const t = await sequelize.transaction();
+  const conn = mongoose.connection;
+  const session = await conn.startSession()
     try {
+        session.startTransaction(); 
         const amount = req.body.amount;
         const desc = req.body.desc;
         const category = req.body.category;
@@ -51,52 +53,76 @@ exports.postExpense = async (req, res, next) => {
         if(amount === undefined || stringInvalid(desc) || stringInvalid(category)) {
             return res.status(400).json({success: false, message:'Input missing'});
         }
-       const data = await Expense.create( {amount: amount, desc: desc, category: category, userId: userId}, {transaction: t});
-       const totalExpenses = Number(req.user.totalExpenses) + Number(amount)
+       const data = await Expense.create( [{amount: amount, desc: desc, category: category, userId: userId}], {session});
+      
+      const totalExpenses = Number(req.user.totalExpenses) + Number(amount)
        console.log("totalExpenses is...."+totalExpenses);
-       await User.update({ totalExpenses: totalExpenses}, { where: {id: req.user.id}, transaction: t});
-       await t.commit();
+      await User.findByIdAndUpdate(req.user.id,  {totalExpenses: totalExpenses},{session});
+      await session.commitTransaction();
+       session.endSession()
         res.status(201).json({newExpenseDetail: data, success: true});
     } catch(err) {
-        await t.rollback();
+        await session.abortTransaction();
+        session.endSession()
         res.status(500).json({error: err, success: false})
     }
 };
 
 exports.deleteExpense = async(req, res, next) => {
-    const t = await sequelize.transaction();
+    const conn = mongoose.connection;
+  const session = await conn.startSession()
     try {
         console.log('inside delete');
+        session.startTransaction();
         if(req.params.id == 'undefined') {
             console.log('Id is missing');
             return res.status(404).json({err: 'Id is missing'});
         }
         const expenseId = req.params.id;
-        const expense = await Expense.findByPk(expenseId);
+        const expense = await Expense.findByIdAndRemove(expenseId);
         const totalExpenses = Number(req.user.totalExpenses) -Number(expense.amount);
    
-        const noOfRows = await Expense.destroy({where: {id: expenseId, userId: req.user.id},transaction: t});
-        
-       const result = await User.update({ totalExpenses: totalExpenses}, { 
-        where: {
-            id: req.user.id
-        }, transaction: t
-        });
+       const noOfRows = await Expense.findOneAndRemove([{id: expenseId, userId: req.user.id}],{session});
+       const result = await User.findByIdAndUpdate(req.user.id,{ totalExpenses: totalExpenses}, { session });
 
 
        console.log(result);
         if(noOfRows === 0)
             return res.status(404).json({success: false, message: 'Expense does not belong to the user'});
-        await t.commit();
+            await session.commitTransaction();
+            session.endSession()
         res.sendStatus(200);
     } catch(error) {
-        await t.rollback();
+        await session.abortTransaction();
+        session.endSession()
         console.log('Delete user is failing '+ JSON.stringify(error));
         res.status(500).json({success: false, message: 'Failed'});
     }
 };
 
 exports.downloadExpenses=async(req,res,next)=>{
+    try {
+        const user=req.user;
+        const expenseResponse=await user.getExpenses();
+        const stringifiedExpenses=JSON.stringify(expenseResponse);
+        console.log('stringified epense is .....', stringifiedExpenses);
+      const fileName=`Expense/${user.id}/${new Date()}.txt`;
+      console.log('filename is ........', fileName);
+      
+      const fileUrl=await s3Services.uploadTos3(stringifiedExpenses,fileName);
+
+      await user.createExpensefile({
+        fileUrl:fileUrl
+      })
+      res.status(200).send({fileUrl:fileUrl});
+
+    } catch (error) {
+        console.log(error);
+         res.status(500).send(error)
+    }
+}
+
+/*exports.downloadExpenses=async(req,res,next)=>{
     try {
         const user=req.user;
         const expenseResponse=await user.getExpenses();
@@ -125,4 +151,4 @@ exports.downloadExpenses=async(req,res,next)=>{
         console.log(error);
          res.status(500).send(error)
     }
-}
+}*/

@@ -7,7 +7,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 
 const errorController = require('./controllers/error');
-const sequelize = require('./util/database');
+//const sequelize = require('./util/database');
+const mongoose = require('mongoose');
 
 const Expense = require('./models/expense');
 const User = require('./models/user');
@@ -52,23 +53,33 @@ app.use((req, res) => {
   res.sendFile(path.join(__dirname, `public/${req.url}`))
 });
 
-User.hasMany(Expense);
+/*User.hasMany(Expense);
 Expense.belongsTo(User);
 
 User.hasMany(Order);
 Order.belongsTo(User);
 
 User.hasMany(ForgotPassword);
-ForgotPassword.belongsTo(User);
+ForgotPassword.belongsTo(User);*/
 
 app.use(errorController.get404);
 
-sequelize.sync().then(result => {
+/*sequelize.sync().then(result => {
     console.log(result);
    // https.createServer({key: privateKey, cert: certificate }, app).listen(process.env.PORT || 3000);
     app.listen(process.env.PORT || 3000);
 })
 .catch(err => {
     console.log(err);
-});
+});*/
 
+mongoose
+  .connect(
+    'mongodb+srv://ashwini:ashwini@cluster0.jqkb0r6.mongodb.net/expenseTracker?retryWrites=true&w=majority'
+  )
+  .then(result => { 
+    app.listen(3000);
+  })
+  .catch(err => {
+    console.log(err);
+  });

@@ -20,7 +20,7 @@ exports.forgotpassword = async (req, res) => {
                 from: 'yj.rocks.2411@gmail.com', // Change to your verified sender
                 subject: 'Sending with SendGrid is Fun',
                 text: 'and easy to do anywhere, even with Node.js',
-                html: `<a href="http://13.48.203.158:3000/password/resetpassword/${id}">Reset password</a>`,
+                html: `<a href="http://localhost:3000/password/resetpassword/${id}">Reset password</a>`,
             }
 
             sgMail
@@ -50,9 +50,9 @@ exports.forgotpassword = async (req, res) => {
 exports.resetPassword = async (req, res) => {
     try {
         const id = req.params.id;
-        const forgotPasswordRequest = await Forgotpassword.findOne({ where: { id }});
+        const forgotPasswordRequest = await Forgotpassword.findById(id);
         if(forgotPasswordRequest) {
-          await forgotPasswordRequest.update({ active: false});
+          await forgotPasswordRequest.findByIdAndUpdate(id, { active: false});
                 res.status(200).send(`<html>
                                     <script>
                                         function formsubmitted(e){
@@ -78,8 +78,8 @@ exports.updatePassword = async(req, res) => {
     try {
         const {newpassword} = req.query;
         const {resetPasswordId} = req.params;
-        const resetPasswordRequest = await Forgotpassword.findOne({ where : {id: resetPasswordId}})
-        const user = await User.findOne({where : { id: resetPasswordRequest.userId}})
+        const resetPasswordRequest = await Forgotpassword.findOne({id: resetPasswordId})
+        const user = await User.findOne({ id: resetPasswordRequest.userId})
         if(user) {
             const saltRounds = 10;
             bcrypt.genSalt(saltRounds, function(err, salt){
@@ -92,7 +92,7 @@ exports.updatePassword = async(req, res) => {
                         console.log(err);
                         throw new Error(err);
                     }
-                    await user.update({ password: hash});
+                    await user.findByIdAndUpdate(resetPasswordRequest.userId, { password: hash});
                     res.status(201).json({ message: 'Successfully updated the new passowrd'})
                 });
             });

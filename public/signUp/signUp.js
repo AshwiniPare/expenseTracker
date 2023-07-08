@@ -13,7 +13,7 @@ async function signUp(event)
             password
         }
         
-        const response = await axios.post('http://13.48.203.158:3000/user/add-user', signUpDetails);
+        const response = await axios.post('http://localhost:3000/user/add-user', signUpDetails);
             alert(response.data.message);
     }
     catch(err) {

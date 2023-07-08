@@ -44,8 +44,8 @@ async function postLogin (req, res, next) {
 
         if(stringInvalid(email) || stringInvalid(password))
             return res.status(400).json({message: "Email id or password is  missing", success: false});
-
-        const user = await User.findAll({ where: { email: email }})
+      
+        const user = await User.find({'email': email })
         if( user.length > 0 ) {
             bcrypt.compare(password, user[0].password, (err, result) => {
                 if(err)

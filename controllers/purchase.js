@@ -1,5 +1,6 @@
 const Razorpay = require("razorpay");
 const Order = require('../models/orders');
+const User = require('../models/user');
 const userController = require('../controllers/user');
 
 exports.purchasePremium = async(req, res) => {
@@ -15,8 +16,8 @@ exports.purchasePremium = async(req, res) => {
             if(err) {
                 throw new Error(JSON.stringify(err));
             }
-
-            req.user.createOrder({orderId: order.id, status: "PENDING"})
+            
+         Order.create({userId: req.user.id, orderId: order.id, status: "PENDING"})
             .then(() => {
                 return res.status(201).json({ order_id: order.id, key_id: rzp.key_id});
             })
@@ -33,9 +34,8 @@ exports.purchasePremium = async(req, res) => {
 exports.updatetransactionstatus = async (req, res) => {
     try {
         const {payment_id, order_id} = req.body;
-        const order = await Order.findOne({where: {orderId: order_id}})
-        const promise1 = order.update({ paymentId: payment_id, status: "SUCCESSFUL"})
-        const promise2 = req.user.update({ isPremiumUser: true})
+        const promise1 = Order.findOneAndUpdate({orderId: order_id}, {paymentId: payment_id, status: "SUCCESSFUL"} )
+        const promise2 = User.findByIdAndUpdate(req.user.id, { isPremiumUser: true})
 
         Promise.all([promise1, promise2]).then(() => {
             return res.status(202).json({ success: true, message: "Transaction Successful", token: userController.generateAccessToken(req.user.id, req.user.name, true) });
@@ -43,7 +43,7 @@ exports.updatetransactionstatus = async (req, res) => {
             throw new Error(error)
         })
     } catch(error) {
-        console.error(err);
+        console.error(error);
         res.status(403).json({ error: error, message: 'Something went wrong in payment update'})
     }
 }
@@ -51,8 +51,7 @@ exports.updatetransactionstatus = async (req, res) => {
 exports.updatefailedtransactionstatus = async (req, res) => {
     try {
         const order_id = req.body.order_id;
-        const order = await Order.findOne({where: {orderId: order_id}})
-        await order.update({ status: "FAILED"})
+       await Order.findByIdAndUpdate(order_id, { status: "FAILED"})
         return res.status(202).json({ success: true, message: "Transaction Successful"});
     }catch(err) {
         console.error(err);
